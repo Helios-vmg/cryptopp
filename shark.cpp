@@ -6,7 +6,7 @@
 #include "modes.h"
 #include "gf256.h"
 
-#if GCC_DIAGNOSTIC_AWARE
+#if CRYPTOPP_GCC_DIAGNOSTIC_AVAILABLE
 # pragma GCC diagnostic ignored "-Wmissing-braces"
 #endif
 
@@ -79,8 +79,7 @@ void SHARK::Enc::InitForKeySetup()
 	m_rounds = DEFAULT_ROUNDS;
 	m_roundKeys.New(DEFAULT_ROUNDS+1);
 
-	unsigned int i;
-	for (i=0; i<static_cast<unsigned int>(DEFAULT_ROUNDS); i++)
+	for (unsigned int i=0; i<DEFAULT_ROUNDS; i++)
 		m_roundKeys[i] = cbox[0][i];
 
 	m_roundKeys[DEFAULT_ROUNDS] = SHARKTransform(cbox[0][DEFAULT_ROUNDS]);
@@ -97,7 +96,8 @@ template <const byte *sbox, const ArrayOf256Word64s *cbox>
 struct SharkProcessAndXorBlock{		// VC60 workaround: problem with template functions
 inline SharkProcessAndXorBlock(const word64 *roundKeys, unsigned int rounds, const byte *inBlock, const byte *xorBlock, byte *outBlock)
 {
-	word64 tmp = *(word64 *)inBlock ^ roundKeys[0];
+	assert(IsAlignedOn(inBlock,GetAlignmentOf<word64>()));
+	word64 tmp = *(word64 *)(void *)inBlock ^ roundKeys[0];
 
 	ByteOrder order = GetNativeByteOrder();
 	tmp = cbox[0][GetByte(order, tmp, 0)] ^ cbox[1][GetByte(order, tmp, 1)] 
@@ -125,7 +125,8 @@ inline SharkProcessAndXorBlock(const word64 *roundKeys, unsigned int rounds, con
 		(sbox[GETBYTE(tmp, 1)])
 		(sbox[GETBYTE(tmp, 0)]);
 
-	*(word64 *)outBlock ^= roundKeys[rounds];
+	assert(IsAlignedOn(outBlock,GetAlignmentOf<word64>()));
+	*(word64 *)(void *)outBlock ^= roundKeys[rounds];
 }};
 
 void SHARK::Enc::ProcessAndXorBlock(const byte *inBlock, const byte *xorBlock, byte *outBlock) const

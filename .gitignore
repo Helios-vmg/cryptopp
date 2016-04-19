@@ -82,6 +82,7 @@ x64/
 build/
 [Bb]in/
 [Oo]bj/
+[Ll]ibs/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -92,6 +93,7 @@ build/
 *.ilk
 *.meta
 *.obj
+*.o
 *.pch
 *.pdb
 *.pgc
@@ -110,6 +112,8 @@ build/
 *.pidb
 *.log
 *.scc
+*.exe
+*.a
 
 # Visual C++ cache files
 ipch/
@@ -249,3 +253,19 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+#################
+## C++Builder
+#################
+
+## Ignore C++Builder temporary files and build results.
+## http://docwiki.embarcadero.com/RADStudio/en/File_Extensions_of_Files_Generated_by_RAD_Studio
+
+# Static library file
+*.lib
+
+# User-specific project options
+*.local
+
+# Dependency file
+*.d
